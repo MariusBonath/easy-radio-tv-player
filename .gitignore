@@ -1,0 +1,41 @@
+# ============================================================
+#  Zugangsdaten – NIEMALS committen
+# ============================================================
+radio_admin/db.php
+tv_admin/db.php
+wp-config.php
+
+# ============================================================
+#  WordPress Core – gehört nicht ins Portfolio-Repo
+# ============================================================
+wp-admin/
+wp-includes/
+wp-content/
+.htaccess
+
+# WordPress Root-Dateien (/ = nur im Repo-Root, nicht in Unterordnern)
+/index.php
+wp-activate.php
+wp-blog-header.php
+wp-comments-post.php
+wp-config-sample.php
+wp-cron.php
+wp-links-opml.php
+wp-load.php
+wp-login.php
+wp-mail.php
+wp-settings.php
+wp-signup.php
+wp-trackback.php
+xmlrpc.php
+readme.html
+license.txt
+
+# ============================================================
+#  Betriebssystem / IDE
+# ============================================================
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log

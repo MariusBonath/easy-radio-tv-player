@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <style>
+      .rp-player {
+        /* Maximale Breite des Players */
+        max-width: 400px;
+
+        /* Außenabstand: oben/unten 20px, links/rechts automatisch zentriert */
+        margin: 20px auto;
+
+        /* Innenabstand */
+        padding: 20px;
+
+        /* Rahmen */
+        border: 1px solid #ccc;
+
+        /* Abgerundete Ecken */
+        border-radius: 8px;
+
+        /* Heller Hintergrund */
+        background: #f7f7f7;
+
+        /* Inhalt zentriert */
+        text-align: center;
+
+        /* Schriftart */
+        font-family: Arial, sans-serif;
+
+        /* Hintergrundfarbe wechselt langsam hin und her */
+        animation: pulseBackground 2s ease-in-out infinite alternate;
+      }
+
+      .rp-player p {
+        /* Abstand oberhalb von Absätzen */
+        margin: 10px 0 0 0;
+      }
+
+      .rp-title {
+        /* Abstand nach unten, damit der Titel vom Inhalt getrennt ist */
+        margin-bottom: 15px;
+      }
+
+      .rp-select {
+        /* Abstand nach unten und etwas Innenabstand */
+        margin-bottom: 15px;
+        padding: 5px;
+      }
+
+      .rp-audio {
+        /* Audio-Element nimmt die volle Breite ein */
+        width: 100%;
+
+        /* Abstand nach oben */
+        margin-top: 15px;
+      }
+
+      .rp-genres {
+        /* Abstand oben und unten */
+        margin: 15px 0;
+      }
+
+      .rp-genre-button {
+        /* Abstand um die Buttons */
+        margin: 5px;
+
+        /* Innenabstand im Button */
+        padding: 8px 12px;
+
+        /* Kein Standardrahmen */
+        border: none;
+
+        /* Runde Ecken */
+        border-radius: 6px;
+
+        /* Dunkler Hintergrund */
+        background: #444;
+
+        /* Weiße Schrift */
+        color: white;
+
+        /* Mauszeiger wird zur Hand */
+        cursor: pointer;
+      }
+
+      .rp-genre-button:hover {
+        /* Etwas dunkler beim Darüberfahren */
+        background: #222;
+      }
+
+      .rp-station-button {
+        /* Button untereinander anzeigen */
+        display: block;
+
+        /* Ganze Breite nutzen */
+        width: 100%;
+
+        /* Abstand oben/unten */
+        margin: 5px 0;
+
+        /* Innenabstand */
+        padding: 10px;
+
+        /* Heller Rahmen */
+        border: 1px solid #ccc;
+
+        /* Runde Ecken */
+        border-radius: 6px;
+
+        /* Heller Hintergrund */
+        background: #eee;
+
+        /* Mauszeiger als Hand */
+        cursor: pointer;
+
+        /* Übergang wäre hier möglich, ist aber auskommentiert */
+        /* transition: background .2s; */
+      }
+
+      .rp-station-button:hover {
+        /* Etwas dunkler beim Überfahren */
+        background: #ddd;
+      }
+
+      .rp-station-logo {
+        /* Bild als Block anzeigen */
+        display: block;
+
+        /* Feste Größe */
+        width: 80px;
+        height: 80px;
+
+        /* Zentriert mit Abstand oben/unten */
+        margin: 10px auto;
+
+        /* Bildanpassung wäre hier möglich, ist aber auskommentiert */
+        /* object-fit: contain; */
+      }
+
+      .rp-logo {
+        /* Bild als Block anzeigen */
+        display: block;
+
+        /* Maximale Breite */
+        max-width: 180px;
+
+        /* Bild darf die verfügbare Breite nutzen */
+        width: 100%;
+
+        /* Höhe automatisch anpassen */
+        height: auto;
+
+        /* Zentriert und Abstand nach unten */
+        margin: 0 auto 15px;
+      }
+
+      @keyframes pulseBackground {
+        from {
+          /* Startfarbe der Animation */
+          background-color: #f700ff;
+        }
+
+        to {
+          /* Endfarbe der Animation */
+          background-color: #00ff37;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Hauptcontainer für den ganzen Radioplayer.-->
+    <div class="rp-player">
+      <!--Überschrift des Players-->
+      <h3>Mein RadioPlayer</h3>
+
+      <!--
+      Logo des Radioplayers. class="rp-logo" wird im CSS definiert. 
+      src="" ist der Pfad zum Logo, 
+      alt="" ist der alternative Text, falls das Bild nicht geladen werden kann.-->
+      <img class="rp-logo" src="" alt="" />
+
+      <!--
+      Anzeige Genre. Text, der dem Benutzer erklärt was er jetzt tun soll. 
+      Hier wird angezeigt, dass ein Genre ausgewählt werden kann.-->
+      <p>Genre auswählen:</p>
+      <!-- 
+      Container für die Genre-Buttons. Später per JavaScript eingefügt.
+      Der BEreich ist am Anfang leer, weil die Inhalte dynamisch geladen werden.-->
+      <div class="rp-genres"></div>
+
+      <!--Anzeige des aktuellen Senders. strong macht den Text fett. Die ID wird in JavaScript benutzt, um den aktuellen Sender anzuzeigen-->
+      <p><strong id="rp-current-station"></strong></p>
+
+      <!-- Logo des aktuell gewählten Senders. Das Bild wird später per JavaScript gesetzt.
+       Wenn das Senderlogo nicht geladen werden kann, springt ein Fallback-Logo ein.-->
+      <img id="rp-current-logo" class="rp-station-logo" src="" alt="" />
+
+      <!--Audio Player.
+      controls zeigt die Bedienelemente an: Play, Pause, Lutstärke usw. 
+      src="#" ist hier nur ein Platzhalter-->
+      <audio src="#" id="rp-audio-player" controls></audio>
+
+      <!--Anzeige Sender. In diesem Bereich werden die Sender-Buttons dynamisch eingefügt.
+      Je nach ausgewähltem Genre erschienen hier die passenden Sender.-->
+      <div id="rp-stations"></div>
+    </div>
+
+    <script>
+      /* Basis-URL für alle Dateien und PHP-Skripte. Dadurch muss man nicht jeden Pfad einzeln schreiben.
+      Wenn sich der Server.Pfad ändert, muss man nur diese eine Zeile anpassen. */
+      const url = "http://mariusbonath.bplaced.net/";
+
+      /* Wir holen und die HTML-Elemente aus der Seite, damit JavaScript diese ELemente später verändern kann. */
+      const rpLogo = document.querySelector(".rp-logo");
+      const rpGenres = document.querySelector(".rp-genres");
+      const rpCurrentStation = document.querySelector("#rp-current-station");
+      const rpCurrentLogo = document.querySelector("#rp-current-logo");
+      const rpAudioPlayer = document.querySelector("#rp-audio-player");
+      const rpStations = document.querySelector("#rp-stations");
+
+      /* gemeinsames Logo. Das wird als Standardlogo benutzt, wenn kein Senderlogo verfügbar ist.*/
+      const rpAppLogo = url + "radio_json/logo1.png";
+
+      /* Arrays für Genres und Sender. Diese werden später mit den Daten aus der Datenbank gefüllt.*/
+      let genres = [];
+      let stations = [];
+
+      /* App-Logo direkt setzen. So erscheint schon ein Bild */
+      rpLogo.src = rpAppLogo;
+
+      /* Lautstärke aus dem Browser-Speicher holen. 
+      localStorage merkt sich Daten auch nach dem Schließen des Browsers */
+      let volumen = localStorage.getItem("rp-volumen");
+      /* Wenn eine Lautstärke im Speicher gespeichert ist, wird diese verwendet. 
+      Andernfalls wird eine Standardlautstärke gesetzt. */
+      if (volumen !== null) {
+        rpAudioPlayer.volume = volumen;
+      } else {
+        rpAudioPlayer.volume = 0.2;
+      }
+
+      /* Immer wenn sich die Lautstärke ändert, wird der neue Wert im Browser gespeichert.
+      So bleibt die Einstellung beim nächsten Besuch erhalten. */
+      rpAudioPlayer.addEventListener("volumechange", function () {
+        localStorage.setItem("rp-volumen", rpAudioPlayer.volume);
+      });
+
+      rpCurrentLogo.onerror = function () {
+        /* Wenn das Senderlogo nicht geladen werden kann, wird das Standardlogo angezeigt. */
+        rpCurrentLogo.src = rpAppLogo;
+      };
+
+      /* Lädt Genres und Sender vom Server und baut die Buttons auf */
+      async function LoadGenreAndStations() {
+        try {
+          const genresResponse = await fetch(url + "radio_json/get_genres.php");
+          genres = await genresResponse.json();
+
+          const stationsResponse = await fetch(url + "radio_json/get_stations.php");
+          stations = await stationsResponse.json();
+
+          /* Für jedes Genre einen Button erzeugen */
+          genres.forEach(function (genre) {
+            let button = document.createElement("button");
+            button.className = "rp-genre-button";
+            button.textContent = genre.name;
+
+            button.addEventListener("click", function () {
+              /* Alte Senderliste leeren */
+              rpStations.innerHTML = "";
+
+              /* Passende Sender zum gewählten Genre anzeigen */
+              stations.forEach(function (station) {
+                if (station.genre_id == genre.id) {
+                  let stationButton = document.createElement("button");
+                  stationButton.className = "rp-station-button";
+                  stationButton.textContent = station.name;
+
+                  stationButton.addEventListener("click", function () {
+                    rpAudioPlayer.src = station.stream_url;
+                    rpAudioPlayer.play();
+                    rpCurrentStation.textContent = "jetzt läuft: " + station.name;
+                    rpCurrentLogo.src = station.logo;
+                  });
+
+                  rpStations.appendChild(stationButton);
+                }
+              });
+            });
+
+            rpGenres.appendChild(button);
+          });
+        } catch (error) {
+          rpGenres.textContent = "Fehler beim Laden der Daten. Bitte Seite neu laden.";
+        }
+      }
+
+      /* Genres und Sender beim Laden der Seite holen */
+      LoadGenreAndStations();
+    </script>
+  </body>
+</html>

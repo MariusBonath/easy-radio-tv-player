@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TV-Player</title>
+
+    <style>
+      .tv-player {
+        max-width: 640px;
+        margin: 20px auto;
+        padding: 20px;
+        border: 1px solid #333;
+        border-radius: 10px;
+        background: #1c1c1c;
+        color: #f2f2f2;
+        text-align: center;
+        font-family: Arial, sans-serif;
+      }
+      .tv-player h3 { margin: 0 0 12px 0; }
+      .tv-player p { margin: 10px 0 0 0; }
+      .tv-logo {
+        display: block;
+        max-width: 180px;
+        width: 100%;
+        height: auto;
+        margin: 0 auto 15px;
+      }
+      .tv-categories { margin: 15px 0; }
+      .tv-category-button {
+        margin: 5px;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 6px;
+        background: #444;
+        color: white;
+        cursor: pointer;
+      }
+      .tv-category-button:hover { background: #666; }
+      .tv-video {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        background: #000;
+        border-radius: 8px;
+        margin-top: 15px;
+      }
+      .tv-channel-button {
+        display: block;
+        width: 100%;
+        margin: 5px 0;
+        padding: 10px;
+        border: 1px solid #444;
+        border-radius: 6px;
+        background: #2b2b2b;
+        color: #f2f2f2;
+        cursor: pointer;
+      }
+      .tv-channel-button:hover { background: #3a3a3a; }
+    </style>
+  </head>
+
+  <body>
+    <!-- Hauptcontainer fuer den ganzen TV-Player -->
+    <div class="tv-player">
+      <h3>Mein TV-Player</h3>
+
+      <!-- App-Logo (Fallback) -->
+      <img class="tv-logo" src="" alt="TV-Player Logo" />
+
+      <!-- Kategorie-Auswahl -->
+      <p>Kategorie auswählen:</p>
+      <div class="tv-categories"></div>
+
+      <!-- Anzeige des aktuellen Senders -->
+      <p><strong id="tv-current-channel"></strong></p>
+
+      <!-- Video-Player (statt Audio beim Radio) -->
+      <video id="tv-video-player" class="tv-video" controls playsinline></video>
+
+      <!-- Sender-Buttons (werden per JavaScript eingefuegt) -->
+      <div id="tv-channels"></div>
+    </div>
+
+    <!-- hls.js macht die .m3u8-Streams in allen Browsern abspielbar -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+
+    <script>
+      /* Basis-URL zum bplaced-Server. Nur diese Zeile anpassen, wenn sich der Pfad aendert. */
+      const url = "http://mariusbonath.bplaced.net/";
+
+      /* HTML-Elemente holen */
+      const tvLogo = document.querySelector(".tv-logo");
+      const tvCategories = document.querySelector(".tv-categories");
+      const tvCurrentChannel = document.querySelector("#tv-current-channel");
+      const tvVideoPlayer = document.querySelector("#tv-video-player");
+      const tvChannels = document.querySelector("#tv-channels");
+
+      /* gemeinsames App-Logo (Fallback) */
+      const tvAppLogo = url + "tv_json/logo1.png";
+
+      /* Arrays fuer Kategorien und Sender */
+      let categories = [];
+      let channels = [];
+
+      /* Merkt sich die aktuelle HLS-Instanz */
+      let currentHls = null;
+
+      /* App-Logo setzen */
+      tvLogo.src = tvAppLogo;
+
+      /* Lautstaerke beim Laden auf 10 % setzen (Projekt-Anforderung) */
+      tvVideoPlayer.volume = 0.1;
+
+      /* Startet einen Stream im Video-Player */
+      function playStream(streamUrl) {
+        if (streamUrl.endsWith(".m3u8")) {
+          if (window.Hls && Hls.isSupported()) {
+            if (currentHls) {
+              currentHls.destroy();
+            }
+            currentHls = new Hls();
+            currentHls.loadSource(streamUrl);
+            currentHls.attachMedia(tvVideoPlayer);
+            currentHls.on(Hls.Events.MANIFEST_PARSED, function () {
+              tvVideoPlayer.play();
+            });
+          } else if (tvVideoPlayer.canPlayType("application/vnd.apple.mpegurl")) {
+            tvVideoPlayer.src = streamUrl;
+            tvVideoPlayer.play();
+          } else {
+            alert("HLS wird von diesem Browser nicht unterstützt.");
+          }
+        } else {
+          if (currentHls) {
+            currentHls.destroy();
+            currentHls = null;
+          }
+          tvVideoPlayer.src = streamUrl;
+          tvVideoPlayer.play();
+        }
+      }
+
+      /* Laedt Kategorien und Sender vom Server */
+      async function LoadCategoriesAndChannels() {
+        try {
+          const categoriesResponse = await fetch(url + "tv_json/get_categories.php");
+          categories = await categoriesResponse.json();
+
+          const channelsResponse = await fetch(url + "tv_json/get_channels.php");
+          channels = await channelsResponse.json();
+
+          categories.forEach(function (category) {
+            let button = document.createElement("button");
+            button.className = "tv-category-button";
+            button.textContent = category.name;
+
+            button.addEventListener("click", function () {
+              tvChannels.innerHTML = "";
+
+              channels.forEach(function (channel) {
+                if (channel.category_id == category.id) {
+                  let channelButton = document.createElement("button");
+                  channelButton.className = "tv-channel-button";
+                  channelButton.textContent = channel.name;
+
+                  channelButton.addEventListener("click", function () {
+                    playStream(channel.stream_url);
+                    tvCurrentChannel.textContent = "jetzt läuft: " + channel.name;
+                  });
+
+                  tvChannels.appendChild(channelButton);
+                }
+              });
+            });
+
+            tvCategories.appendChild(button);
+          });
+        } catch (error) {
+          tvCategories.textContent = "Fehler beim Laden der Daten. Bitte Seite neu laden.";
+        }
+      }
+
+      /* Direkt aufrufen */
+      LoadCategoriesAndChannels();
+    </script>
+  </body>
+</html>
