@@ -66,10 +66,6 @@ CREATE TABLE stations (
    - Radio: `http://localhost/radio_admin/`
    - TV: `http://localhost/tv_admin/`
 
-## Live-Demo
-
-- Radio-Player: `http://mariusbonath.bplaced.net/easy_radio/player.html`
-- TV-Player: `http://mariusbonath.bplaced.net/easy_tv/player.html`
 
 ## Lernziele
 
